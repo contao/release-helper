@@ -1,0 +1,108 @@
+<?php
+
+/*
+ * This file is part of Contao.
+ *
+ * Copyright (c) 2005-2017 Leo Feyer
+ *
+ * @license LGPL-3.0+
+ */
+
+namespace Contao\ReleaseHelper\Command;
+
+use Humbug\SelfUpdate\Strategy\ShaStrategy;
+use Humbug\SelfUpdate\Updater;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+
+/**
+ * Updates the .phar file.
+ *
+ * @author Leo Feyer <https://github.com/leofeyer>
+ */
+class UpdateCommand extends Command
+{
+    /**
+     * {@inheritdoc}
+     */
+    protected function configure(): void
+    {
+        $this
+            ->setName('self-update')
+            ->setDefinition([
+                new InputOption('rollback', 'r', InputOption::VALUE_NONE, 'Roll back to the previous version'),
+            ])
+            ->setDescription('Updates the .phar file')
+        ;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function execute(InputInterface $input, OutputInterface $output): int
+    {
+        if ($input->hasOption('rollback') && true === $input->getOption('rollback')) {
+            return $this->rollback($output);
+        }
+
+        return $this->update($output);
+    }
+
+    /**
+     * Updates the .phar file.
+     *
+     * @param OutputInterface $output
+     *
+     * @return int
+     */
+    private function update(OutputInterface $output): int
+    {
+        $updater = new Updater();
+
+        /** @var ShaStrategy $strategy */
+        $strategy = $updater->getStrategy();
+        $strategy->setPharUrl('file://'.getcwd().'/contao-release-helper.phar'); // FIXME
+        $strategy->setVersionUrl('file://'.getcwd().'/contao-release-helper.phar.version'); // FIXME
+
+        $result = $updater->update();
+
+        if (false === $result) {
+            $output->writeln('<info>Already up-to-date.</info>');
+        } else {
+            $output->writeln(
+                sprintf(
+                    'Updated from version %s to version %s.',
+                    $updater->getOldVersion(),
+                    $updater->getNewVersion()
+                )
+            );
+        }
+
+        return 0;
+    }
+
+    /**
+     * Rolls back the update.
+     *
+     * @param OutputInterface $output
+     *
+     * @return int
+     */
+    private function rollback(OutputInterface $output): int
+    {
+        $updater = new Updater();
+        $result = $updater->rollback();
+
+        if (true === $result) {
+            $output->writeln('<info>Successfully rolled back to the previous version.</info>');
+
+            return 0;
+        } else {
+            $output->writeln('<error>Could not roll back to the previous version.</error>');
+
+            return 1;
+        }
+    }
+}

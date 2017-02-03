@@ -1,0 +1,24 @@
+{
+    "directories": [
+        "src"
+    ],
+    "finder": [
+        {
+            "name": "*.php",
+            "in": "vendor",
+            "exclude": ["test", "tests", "Test", "Tests"]
+        }
+    ],
+    "compactors": [
+        "Herrera\\Box\\Compactor\\Json",
+        "Herrera\\Box\\Compactor\\Php"
+    ],
+    "compression": "NONE",
+    "git-version": "package_version",
+    "main": "bin/contao-release-helper",
+    "output": "contao-release-helper.phar",
+    "chmod": "0755",
+    "stub": true,
+    "algorithm": "OPENSSL",
+    "key": "contao-release-helper.phar.pem"
+}

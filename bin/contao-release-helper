@@ -1,0 +1,31 @@
+#!/usr/bin/env php
+<?php
+
+/*
+ * This file is part of Contao.
+ *
+ * Copyright (c) 2005-2017 Leo Feyer
+ *
+ * @license LGPL-3.0+
+ */
+
+include __DIR__.'/../vendor/autoload.php';
+
+use Symfony\Component\Console\Application;
+use Symfony\Component\Finder\Finder;
+
+$application = new Application('Contao release helper', '@package_version@');
+
+$finder = (new Finder())
+    ->files()
+    ->name('*Command.php')
+    ->in(__DIR__.'/../src/Command')
+;
+
+/** @var SplFileInfo $file */
+foreach ($finder as $file) {
+    $class = 'Contao\ReleaseHelper\Command\\'.$file->getBasename('.php');
+    $application->add(new $class());
+}
+
+$application->run();

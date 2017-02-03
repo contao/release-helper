@@ -1,0 +1,35 @@
+{
+    "name": "contao/release-helper",
+    "type": "project",
+    "description": "Contao 4 release helper",
+    "license": "LGPL-3.0+",
+    "authors": [
+        {
+            "name": "Leo Feyer",
+            "homepage": "https://github.com/leofeyer"
+        }
+    ],
+    "require": {
+        "php": ">=7.1.0",
+        "guzzlehttp/guzzle": "^6.0",
+        "padraic/phar-updater": "^1.0",
+        "php-http/guzzle6-adapter": "^1.0",
+        "symfony/console": "^3.2",
+        "symfony/filesystem": "^3.2",
+        "symfony/finder": "^3.2",
+        "symfony/process": "^3.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Contao\\ReleaseHelper\\": "src/"
+        }
+    },
+    "bin": [
+        "bin/contao-release-helper"
+    ],
+    "extra": {
+        "branch-alias": {
+            "dev-develop": "0.2.x-dev"
+        }
+    }
+}
