@@ -60,7 +60,7 @@ class PurgeTestFilesTask implements TaskInterface
             '
                 cd %s/contao-%s;
                 rm -rf .git;
-                [ -e var/cache/prod] && rm -r var/cache/prod;
+                [ -e var/cache/prod ] && rm -r var/cache/prod;
                 find vendor/tecnickcom/tcpdf/fonts -type d -mindepth 1 -exec rm -r {} \;
                 find vendor/tecnickcom/tcpdf/fonts -type f ! -name "courier.php" ! -name "freeserif*.*" ! -name "helvetica*.php" -exec rm {} \;
                 find -E vendor -type d -iregex ".*/(docs?|examples|notes|sites|tests?)" -exec rm -r {} \;
