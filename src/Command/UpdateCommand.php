@@ -10,7 +10,7 @@
 
 namespace Contao\ReleaseHelper\Command;
 
-use Humbug\SelfUpdate\Strategy\ShaStrategy;
+use Humbug\SelfUpdate\Strategy\GithubStrategy;
 use Humbug\SelfUpdate\Updater;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -59,12 +59,15 @@ class UpdateCommand extends Command
      */
     private function update(OutputInterface $output): int
     {
-        $updater = new Updater();
+        $updater = new Updater(null, false);
+        $updater->setStrategy(Updater::STRATEGY_GITHUB);
 
-        /** @var ShaStrategy $strategy */
+        /** @var GithubStrategy $strategy */
         $strategy = $updater->getStrategy();
-        $strategy->setPharUrl('file://'.getcwd().'/contao-release-helper.phar'); // FIXME
-        $strategy->setVersionUrl('file://'.getcwd().'/contao-release-helper.phar.version'); // FIXME
+
+        $strategy->setPackageName('contao/release-helper');
+        $strategy->setPharName('contao-release-helper.phar');
+        $strategy->setCurrentLocalVersion($this->getApplication()->getVersion());
 
         $result = $updater->update();
 
