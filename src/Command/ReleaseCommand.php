@@ -34,6 +34,7 @@ class ReleaseCommand extends Command
         'contao/faq-bundle',
         'contao/installation-bundle',
         'contao/listing-bundle',
+        'contao/manager-bundle',
         'contao/news-bundle',
         'contao/newsletter-bundle',
     ];

@@ -61,8 +61,15 @@ class UpdateCommand extends Command
      */
     private function update(OutputInterface $output): int
     {
+        $backupPath = getenv('HOME').'/.contao-release-helper';
+
+        if (!is_dir($backupPath)) {
+            mkdir($backupPath);
+        }
+
         $updater = new Updater(null, false);
         $updater->setStrategy(Updater::STRATEGY_GITHUB);
+        $updater->setBackupPath($backupPath);
 
         /** @var GithubStrategy $strategy */
         $strategy = $updater->getStrategy();
@@ -83,6 +90,8 @@ class UpdateCommand extends Command
                     $updater->getNewVersion()
                 )
             );
+
+            $output->writeln('Use <info>self-update --rollback</info> to return to the previous version.');
         }
 
         return 0;
