@@ -63,11 +63,13 @@ class MergeHotfixBranchTask implements TaskInterface
                 cd %s;
                 git add -A;
                 git commit -m "Bump the version number.";
+                git push origin %s;
                 git checkout master;
                 git merge -m "Merge branch \'%s\'" %s;
                 git push origin master;
             ',
             $this->bundleDir,
+            $this->branchName,
             $this->branchName,
             $this->branchName
         );
