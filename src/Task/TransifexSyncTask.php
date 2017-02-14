@@ -129,7 +129,7 @@ class TransifexSyncTask implements TaskInterface
             throw new \RuntimeException($response->getReasonPhrase());
         }
 
-        return json_decode($response->getBody());
+        return json_decode($response->getBody()->getContents());
     }
 
     /**
@@ -149,7 +149,7 @@ class TransifexSyncTask implements TaskInterface
             throw new \RuntimeException($response->getReasonPhrase());
         }
 
-        return json_decode($response->getBody());
+        return json_decode($response->getBody()->getContents());
     }
 
     /**
@@ -223,7 +223,7 @@ class TransifexSyncTask implements TaskInterface
             throw new \RuntimeException($response->getReasonPhrase());
         }
 
-        return json_decode($response->getBody())->content;
+        return json_decode($response->getBody()->getContents())->content;
     }
 
     /**
