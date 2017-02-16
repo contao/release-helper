@@ -107,7 +107,7 @@ class UpdateCommand extends Command
     private function rollback(OutputInterface $output): int
     {
         $updater = new Updater(null, false);
-        $updater->setBackupPath(getenv('HOME').'/.contao-release-helper/old.phar');
+        $updater->setRestorePath(getenv('HOME').'/.contao-release-helper/old.phar');
 
         $result = $updater->rollback();
 
