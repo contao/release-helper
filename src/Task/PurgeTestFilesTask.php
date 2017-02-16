@@ -12,8 +12,9 @@ declare(strict_types=1);
 
 namespace Contao\ReleaseHelper\Task;
 
-use Contao\ReleaseHelper\Process\ProcessTrait;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
 
 /**
  * Purges the test files.
@@ -22,17 +23,10 @@ use Psr\Log\LoggerInterface;
  */
 class PurgeTestFilesTask implements TaskInterface
 {
-    use ProcessTrait;
-
     /**
      * @var string
      */
-    private $rootDir;
-
-    /**
-     * @var string
-     */
-    private $version;
+    private $buildDir;
 
     /**
      * @var LoggerInterface
@@ -42,14 +36,12 @@ class PurgeTestFilesTask implements TaskInterface
     /**
      * Constructor.
      *
-     * @param string               $rootDir
-     * @param string               $version
+     * @param string               $buildDir
      * @param LoggerInterface|null $logger
      */
-    public function __construct(string $rootDir, string $version, LoggerInterface $logger = null)
+    public function __construct(string $buildDir, LoggerInterface $logger = null)
     {
-        $this->rootDir = $rootDir;
-        $this->version = $version;
+        $this->buildDir = $buildDir;
         $this->logger = $logger;
     }
 
@@ -58,23 +50,49 @@ class PurgeTestFilesTask implements TaskInterface
      */
     public function run(): void
     {
-        $command = sprintf(
-            '
-                cd %s/contao-%s;
-                rm -rf .git;
-                [ -e var/cache/prod ] && rm -r var/cache/prod;
-                find vendor/tecnickcom/tcpdf/fonts -d -type d -mindepth 1 -exec rm -r {} \;
-                find vendor/tecnickcom/tcpdf/fonts -d -type f ! -name "courier.php" ! -name "freeserif*.*" ! -name "helvetica*.php" -exec rm {} \;
-                find -E -d vendor -type d -iregex ".*/(docs?|examples|notes|sites|tests?)" -exec rm -r {} \;
-            ',
-            $this->rootDir,
-            $this->version
-        );
+        $fs = new Filesystem();
+        $fs->remove($this->buildDir.'/.git');
 
-        $this->executeCommand($command);
+        if (is_dir($this->buildDir.'/var/cache/prod')) {
+            $fs->remove($this->buildDir.'/var/cache/prod');
+        }
+
+        $finder = (new Finder())
+            ->directories()
+            ->in($this->buildDir.'/vendor/tecnickcom/tcpdf/fonts')
+        ;
+
+        $fs->remove($finder->getIterator());
+
+        $finder = (new Finder())
+            ->files()
+            ->notName('courier.php')
+            ->notName('freeserif*.*')
+            ->notName('helvetica*.php')
+            ->in($this->buildDir.'/vendor/tecnickcom/tcpdf/fonts')
+        ;
+
+        $fs->remove($finder->getIterator());
+
+        $finder = (new Finder())
+            ->directories()
+            ->name('doc')
+            ->name('docs')
+            ->name('examples')
+            ->name('notes')
+            ->name('sites')
+            ->name('test')
+            ->name('tests')
+            ->name('Test')
+            ->name('Tests')
+            ->notPath('twig/lib/Twig')
+            ->in($this->buildDir.'/vendor')
+        ;
+
+        $fs->remove($finder->getIterator());
 
         if (null !== $this->logger) {
-            $this->logger->notice('Purged the test files.');
+            $this->logger->notice('Purged the docs and tests folders.');
         }
     }
 }

@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 namespace Contao\ReleaseHelper\Task;
 
-use Contao\ReleaseHelper\Process\ProcessTrait;
+use GitWrapper\GitWrapper;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -22,12 +22,10 @@ use Psr\Log\LoggerInterface;
  */
 class TagMasterBranchTask implements TaskInterface
 {
-    use ProcessTrait;
-
     /**
      * @var string
      */
-    private $bundleDir;
+    private $rootDir;
 
     /**
      * @var string
@@ -42,13 +40,13 @@ class TagMasterBranchTask implements TaskInterface
     /**
      * Constructor.
      *
-     * @param string               $bundleDir
+     * @param string               $rootDir
      * @param string               $version
      * @param LoggerInterface|null $logger
      */
-    public function __construct(string $bundleDir, string $version, LoggerInterface $logger = null)
+    public function __construct(string $rootDir, string $version, LoggerInterface $logger = null)
     {
-        $this->bundleDir = $bundleDir;
+        $this->rootDir = $rootDir;
         $this->version = $version;
         $this->logger = $logger;
     }
@@ -58,19 +56,12 @@ class TagMasterBranchTask implements TaskInterface
      */
     public function run(): void
     {
-        $command = sprintf(
-            '
-                cd %s;
-                git checkout master;
-                git tag %s;
-                git push origin %s;
-            ',
-            $this->bundleDir,
-            $this->version,
-            $this->version
-        );
-
-        $this->executeCommand($command);
+        (new GitWrapper())
+            ->workingCopy($this->rootDir)
+            ->checkout('master')
+            ->tag($this->version)
+            ->pushTag($this->version)
+        ;
 
         if (null !== $this->logger) {
             $this->logger->notice('Tagged the master branch.');

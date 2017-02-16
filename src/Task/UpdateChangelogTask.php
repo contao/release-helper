@@ -24,7 +24,7 @@ class UpdateChangelogTask implements TaskInterface
     /**
      * @var string
      */
-    private $bundleDir;
+    private $rootDir;
 
     /**
      * @var string
@@ -39,13 +39,13 @@ class UpdateChangelogTask implements TaskInterface
     /**
      * Constructor.
      *
-     * @param string               $bundleDir
+     * @param string               $rootDir
      * @param string               $version
      * @param LoggerInterface|null $logger
      */
-    public function __construct(string $bundleDir, string $version, LoggerInterface $logger = null)
+    public function __construct(string $rootDir, string $version, LoggerInterface $logger = null)
     {
-        $this->bundleDir = $bundleDir;
+        $this->rootDir = $rootDir;
         $this->version = $version;
         $this->logger = $logger;
     }
@@ -55,7 +55,7 @@ class UpdateChangelogTask implements TaskInterface
      */
     public function run(): void
     {
-        $changeLog = $this->bundleDir.'/CHANGELOG.md';
+        $changeLog = $this->rootDir.'/CHANGELOG.md';
 
         if (!file_exists($changeLog)) {
             return;

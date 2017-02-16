@@ -24,7 +24,7 @@ class UpdateConstantsTask implements TaskInterface
     /**
      * @var string
      */
-    private $bundleDir;
+    private $rootDir;
 
     /**
      * @var string
@@ -39,13 +39,13 @@ class UpdateConstantsTask implements TaskInterface
     /**
      * Constructor.
      *
-     * @param string               $bundleDir
+     * @param string               $rootDir
      * @param string               $version
      * @param LoggerInterface|null $logger
      */
-    public function __construct(string $bundleDir, string $version, LoggerInterface $logger = null)
+    public function __construct(string $rootDir, string $version, LoggerInterface $logger = null)
     {
-        $this->bundleDir = $bundleDir;
+        $this->rootDir = $rootDir;
         $this->version = $version;
         $this->logger = $logger;
     }
@@ -55,7 +55,7 @@ class UpdateConstantsTask implements TaskInterface
      */
     public function run(): void
     {
-        $constants = $this->bundleDir.'/src/Resources/contao/config/constants.php';
+        $constants = $this->rootDir.'/src/Resources/contao/config/constants.php';
 
         if (!file_exists($constants)) {
             return;

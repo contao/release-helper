@@ -12,8 +12,9 @@ declare(strict_types=1);
 
 namespace Contao\ReleaseHelper\Task;
 
-use Contao\ReleaseHelper\Process\ProcessTrait;
-use GuzzleHttp\Client;
+use BabDev\Transifex\Languages;
+use BabDev\Transifex\Transifex;
+use BabDev\Transifex\Translations;
 use GuzzleHttp\Exception\ClientException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -25,12 +26,10 @@ use Symfony\Component\Filesystem\Filesystem;
  */
 class TransifexSyncTask implements TaskInterface
 {
-    use ProcessTrait;
-
     /**
      * @var string
      */
-    private $bundleDir;
+    private $rootDir;
 
     /**
      * @var LoggerInterface
@@ -38,20 +37,28 @@ class TransifexSyncTask implements TaskInterface
     private $logger;
 
     /**
-     * @var Client
+     * @var string
      */
-    private $client;
+    private $slug;
+
+    /**
+     * @var Transifex
+     */
+    private $transifex;
 
     /**
      * Constructor.
      *
-     * @param string               $bundleDir
+     * @param string               $rootDir
      * @param LoggerInterface|null $logger
      */
-    public function __construct(string $bundleDir, LoggerInterface $logger = null)
+    public function __construct(string $rootDir, LoggerInterface $logger = null)
     {
-        $this->bundleDir = $bundleDir;
+        $this->rootDir = $rootDir;
         $this->logger = $logger;
+        $this->slug = 'contao-'.basename($this->rootDir);
+
+        $this->initializeTransifex();
     }
 
     /**
@@ -95,39 +102,39 @@ class TransifexSyncTask implements TaskInterface
     }
 
     /**
-     * Returns the HTTP client.
+     * Initializes the Transifex client.
      *
-     * @return Client
+     * @throws \RuntimeException
      */
-    private function getClient(): Client
+    private function initializeTransifex(): void
     {
-        if (null === $this->client) {
-            $this->client = new Client([
-                'base_uri' => sprintf(
-                    'https://www.transifex.com/api/2/project/%s/',
-                    'contao-'.basename($this->bundleDir)
-                ),
-                'auth' => $this->getTransifexCredentials(),
-            ]);
+        $runcomFile = getenv('HOME').'/.transifexrc';
+
+        if (!file_exists($runcomFile)) {
+            throw new \RuntimeException(sprintf('The Transifex runcom file "%s" does not exist.', $runcomFile));
         }
 
-        return $this->client;
+        $config = parse_ini_file($runcomFile);
+
+        $options = [
+            'api.username' => $config['username'],
+            'api.password' => $config['password'],
+        ];
+
+        $this->transifex = new Transifex($options);
     }
 
     /**
      * Returns the languages.
      *
      * @return array
-     *
-     * @throws \RuntimeException
      */
     private function getLanguages(): array
     {
-        $response = $this->getClient()->request('GET', 'languages');
+        /** @var Languages $languages */
+        $languages = $this->transifex->get('languages');
 
-        if (200 !== $response->getStatusCode()) {
-            throw new \RuntimeException($response->getReasonPhrase());
-        }
+        $response = $languages->getLanguages($this->slug);
 
         return json_decode($response->getBody()->getContents());
     }
@@ -138,38 +145,15 @@ class TransifexSyncTask implements TaskInterface
      * @param string $language
      *
      * @return \stdClass
-     *
-     * @throws \RuntimeException
      */
     private function getLanguageDetails(string $language): \stdClass
     {
-        $response = $this->getClient()->request('GET', sprintf('language/%s?details', $language));
+        /** @var Languages $languages */
+        $languages = $this->transifex->get('languages');
 
-        if (200 !== $response->getStatusCode()) {
-            throw new \RuntimeException($response->getReasonPhrase());
-        }
+        $response = $languages->getLanguage($this->slug, $language, true);
 
         return json_decode($response->getBody()->getContents());
-    }
-
-    /**
-     * Returns the Transifex credentials.
-     *
-     * @return array
-     *
-     * @throws \RuntimeException
-     */
-    private function getTransifexCredentials(): array
-    {
-        $runcomFile = getenv('HOME').'/.transifexrc';
-
-        if (!file_exists($runcomFile)) {
-            throw new \RuntimeException(sprintf('The Transifex runcom file "%s" does not exist.', $runcomFile));
-        }
-
-        $config = parse_ini_file($runcomFile);
-
-        return [$config['username'], $config['password']];
     }
 
     /**
@@ -181,7 +165,7 @@ class TransifexSyncTask implements TaskInterface
      */
     private function addTranslation(string $language): void
     {
-        $txFile = $this->bundleDir.'/.tx/config';
+        $txFile = $this->rootDir.'/.tx/config';
 
         if (!file_exists($txFile)) {
             throw new \RuntimeException(sprintf('The Transifex configuration file "%s" does not exist.', $txFile));
@@ -194,7 +178,7 @@ class TransifexSyncTask implements TaskInterface
                 continue;
             }
 
-            $target = $this->bundleDir.'/'.str_replace('<lang>', $language, $settings['file_filter']);
+            $target = $this->rootDir.'/'.str_replace('<lang>', $language, $settings['file_filter']);
             $targetDir = dirname($target);
 
             if (!is_dir($targetDir)) {
@@ -217,11 +201,10 @@ class TransifexSyncTask implements TaskInterface
     {
         list(, $resource) = explode('.', $key);
 
-        $response = $this->getClient()->request('GET', sprintf('resource/%s/translation/%s', $resource, $language));
+        /** @var Translations $translations */
+        $translations = $this->transifex->get('translations');
 
-        if (200 !== $response->getStatusCode()) {
-            throw new \RuntimeException($response->getReasonPhrase());
-        }
+        $response = $translations->getTranslation($this->slug, $resource, $language);
 
         return json_decode($response->getBody()->getContents())->content;
     }
@@ -233,7 +216,7 @@ class TransifexSyncTask implements TaskInterface
      */
     private function removeTranslation(string $language): void
     {
-        $folder = $this->bundleDir.'/src/Resources/contao/languages/'.$language;
+        $folder = $this->rootDir.'/src/Resources/contao/languages/'.$language;
 
         if (!is_dir($folder)) {
             return;

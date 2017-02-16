@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 namespace Contao\ReleaseHelper\Task;
 
-use Contao\ReleaseHelper\Process\ProcessTrait;
+use GitWrapper\GitWrapper;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -22,12 +22,10 @@ use Psr\Log\LoggerInterface;
  */
 class CloneRepositoryTask implements TaskInterface
 {
-    use ProcessTrait;
-
     /**
      * @var string
      */
-    private $rootDir;
+    private $buildDir;
 
     /**
      * @var string
@@ -42,13 +40,13 @@ class CloneRepositoryTask implements TaskInterface
     /**
      * Constructor.
      *
-     * @param string               $rootDir
+     * @param string               $buildDir
      * @param string               $version
      * @param LoggerInterface|null $logger
      */
-    public function __construct(string $rootDir, string $version, LoggerInterface $logger = null)
+    public function __construct(string $buildDir, string $version, LoggerInterface $logger = null)
     {
-        $this->rootDir = $rootDir;
+        $this->buildDir = $buildDir;
         $this->version = $version;
         $this->logger = $logger;
     }
@@ -58,24 +56,14 @@ class CloneRepositoryTask implements TaskInterface
      */
     public function run(): void
     {
-        $command = sprintf(
-            '
-                cd %s;
-                git clone . contao-%s;
-                cd contao-%s;
-                git checkout --quiet %s;
-                git reset --hard;
-            ',
-            $this->rootDir,
-            $this->version,
-            $this->version,
-            $this->version
-        );
-
-        $this->executeCommand($command);
+        (new GitWrapper())
+            ->cloneRepository(dirname($this->buildDir), $this->buildDir)
+            ->checkout($this->version)
+            ->reset(['hard' => true])
+        ;
 
         if (null !== $this->logger) {
-            $this->logger->notice(sprintf('Cloned the repository into the "contao-%s" folder.', $this->version));
+            $this->logger->notice(sprintf('Cloned the repository into the "%s" folder.', basename($this->buildDir)));
         }
     }
 }

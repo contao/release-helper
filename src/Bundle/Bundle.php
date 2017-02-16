@@ -12,12 +12,12 @@ declare(strict_types=1);
 
 namespace Contao\ReleaseHelper\Bundle;
 
-use Contao\ReleaseHelper\Process\ProcessTrait;
 use Contao\ReleaseHelper\Task\MergeHotfixBranchTask;
 use Contao\ReleaseHelper\Task\TagMasterBranchTask;
 use Contao\ReleaseHelper\Task\TransifexSyncTask;
 use Contao\ReleaseHelper\Task\UpdateChangelogTask;
 use Contao\ReleaseHelper\Task\UpdateConstantsTask;
+use GitWrapper\GitWrapper;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -27,8 +27,6 @@ use Psr\Log\LoggerInterface;
  */
 class Bundle
 {
-    use ProcessTrait;
-
     /**
      * @var string
      */
@@ -101,15 +99,7 @@ class Bundle
      */
     private function getBranchName(): string
     {
-        $command = sprintf(
-            '
-                cd %s;
-                git symbolic-ref --short HEAD;
-            ',
-            $this->path
-        );
-
-        $branchName = trim($this->executeCommand($command)->getOutput());
+        $branchName = trim((new GitWrapper())->git('symbolic-ref --short HEAD', $this->path));
 
         if ('master' !== $branchName && 0 !== strncmp('hotfix/', $branchName, 7)) {
             throw new \RuntimeException(
