@@ -12,8 +12,10 @@ declare(strict_types=1);
 
 namespace Contao\ReleaseHelper\Task;
 
-use Contao\ReleaseHelper\Process\ProcessTrait;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\ExecutableFinder;
+use Symfony\Component\Process\Process;
 
 /**
  * Installs the dependencies.
@@ -22,17 +24,10 @@ use Psr\Log\LoggerInterface;
  */
 class InstallDependenciesTask implements TaskInterface
 {
-    use ProcessTrait;
-
     /**
      * @var string
      */
-    private $rootDir;
-
-    /**
-     * @var string
-     */
-    private $version;
+    private $buildDir;
 
     /**
      * @var LoggerInterface
@@ -42,14 +37,12 @@ class InstallDependenciesTask implements TaskInterface
     /**
      * Constructor.
      *
-     * @param string               $rootDir
-     * @param string               $version
+     * @param string               $buildDir
      * @param LoggerInterface|null $logger
      */
-    public function __construct(string $rootDir, string $version, LoggerInterface $logger = null)
+    public function __construct(string $buildDir, LoggerInterface $logger = null)
     {
-        $this->rootDir = $rootDir;
-        $this->version = $version;
+        $this->buildDir = $buildDir;
         $this->logger = $logger;
     }
 
@@ -58,16 +51,24 @@ class InstallDependenciesTask implements TaskInterface
      */
     public function run(): void
     {
-        $command = sprintf(
-            '
-                cd %s/contao-%s;
-                composer install --prefer-dist --no-dev --no-scripts;
-            ',
-            $this->rootDir,
-            $this->version
-        );
+        $finder = new ExecutableFinder();
 
-        $this->executeCommand($command);
+        if (false === ($composer = $finder->find('composer', false))) {
+            throw new \RuntimeException('The composer executable could not be found.');
+        }
+
+        $callback = function ($type, $buffer) {
+            if (Process::OUT === $type && null !== $this->logger) {
+                $this->logger->info($buffer);
+            }
+        };
+
+        $process = new Process('composer install --prefer-dist --no-dev --no-scripts', $this->buildDir);
+        $process->run($callback);
+
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
 
         if (null !== $this->logger) {
             $this->logger->notice('Installed the dependencies.');

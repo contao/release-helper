@@ -12,8 +12,10 @@ declare(strict_types=1);
 
 namespace Contao\ReleaseHelper\Task;
 
-use Contao\ReleaseHelper\Process\ProcessTrait;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\ExecutableFinder;
+use Symfony\Component\Process\Process;
 
 /**
  * Packs the .zip and .tar.gz archive.
@@ -22,12 +24,10 @@ use Psr\Log\LoggerInterface;
  */
 class PackArchivesTask implements TaskInterface
 {
-    use ProcessTrait;
-
     /**
      * @var string
      */
-    private $rootDir;
+    private $buildDir;
 
     /**
      * @var string
@@ -42,13 +42,13 @@ class PackArchivesTask implements TaskInterface
     /**
      * Constructor.
      *
-     * @param string               $rootDir
+     * @param string               $buildDir
      * @param string               $version
      * @param LoggerInterface|null $logger
      */
-    public function __construct(string $rootDir, string $version, LoggerInterface $logger = null)
+    public function __construct(string $buildDir, string $version, LoggerInterface $logger = null)
     {
-        $this->rootDir = $rootDir;
+        $this->buildDir = $buildDir;
         $this->version = $version;
         $this->logger = $logger;
     }
@@ -58,23 +58,73 @@ class PackArchivesTask implements TaskInterface
      */
     public function run(): void
     {
-        $command = sprintf(
-            '
-                cd %s;
-                zip -r contao-%s.zip contao-%s/;
-                tar -czf contao-%s.tar.gz contao-%s/;
-            ',
-            $this->rootDir,
-            $this->version,
-            $this->version,
-            $this->version,
-            $this->version
-        );
-
-        $this->executeCommand($command);
+        $this->generateZip();
+        $this->generateTar();
 
         if (null !== $this->logger) {
             $this->logger->notice('Packed the .zip and .tar.gz archive.');
+        }
+    }
+
+    /**
+     * Generates the .zip file.
+     *
+     * @throws \RuntimeException
+     * @throws ProcessFailedException
+     */
+    private function generateZip(): void
+    {
+        $finder = new ExecutableFinder();
+
+        if (false === ($zip = $finder->find('zip', false))) {
+            throw new \RuntimeException('The zip executable could not be found.');
+        }
+
+        $process = new Process(
+            sprintf(
+                '%s -r contao-%s.zip contao-%s/',
+                $zip,
+                $this->version,
+                $this->version
+            ),
+            $this->buildDir
+        );
+
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+    }
+
+    /**
+     * Generates the .tar.gz file.
+     *
+     * @throws \RuntimeException
+     * @throws ProcessFailedException
+     */
+    private function generateTar(): void
+    {
+        $finder = new ExecutableFinder();
+
+        if (false === ($tar = $finder->find('tar', false))) {
+            throw new \RuntimeException('The tar executable could not be found.');
+        }
+
+        $process = new Process(
+            sprintf(
+                '%s -czf contao-%s.tar.gz contao-%s/',
+                $tar,
+                $this->version,
+                $this->version
+            ),
+            $this->buildDir
+        );
+
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
         }
     }
 }

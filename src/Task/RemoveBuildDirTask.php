@@ -25,12 +25,7 @@ class RemoveBuildDirTask implements TaskInterface
     /**
      * @var string
      */
-    private $rootDir;
-
-    /**
-     * @var string
-     */
-    private $version;
+    private $buildDir;
 
     /**
      * @var LoggerInterface
@@ -40,14 +35,12 @@ class RemoveBuildDirTask implements TaskInterface
     /**
      * Constructor.
      *
-     * @param string               $rootDir
-     * @param string               $version
+     * @param string               $buildDir
      * @param LoggerInterface|null $logger
      */
-    public function __construct(string $rootDir, string $version, LoggerInterface $logger = null)
+    public function __construct(string $buildDir, LoggerInterface $logger = null)
     {
-        $this->rootDir = $rootDir;
-        $this->version = $version;
+        $this->buildDir = $buildDir;
         $this->logger = $logger;
     }
 
@@ -56,7 +49,7 @@ class RemoveBuildDirTask implements TaskInterface
      */
     public function run(): void
     {
-        (new Filesystem())->remove(sprintf('%s/contao-%s', $this->rootDir, $this->version));
+        (new Filesystem())->remove($this->buildDir);
 
         if (null !== $this->logger) {
             $this->logger->notice('Removed the build directory.');

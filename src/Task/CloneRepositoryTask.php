@@ -25,7 +25,7 @@ class CloneRepositoryTask implements TaskInterface
     /**
      * @var string
      */
-    private $rootDir;
+    private $buildDir;
 
     /**
      * @var string
@@ -40,13 +40,13 @@ class CloneRepositoryTask implements TaskInterface
     /**
      * Constructor.
      *
-     * @param string               $rootDir
+     * @param string               $buildDir
      * @param string               $version
      * @param LoggerInterface|null $logger
      */
-    public function __construct(string $rootDir, string $version, LoggerInterface $logger = null)
+    public function __construct(string $buildDir, string $version, LoggerInterface $logger = null)
     {
-        $this->rootDir = $rootDir;
+        $this->buildDir = $buildDir;
         $this->version = $version;
         $this->logger = $logger;
     }
@@ -57,13 +57,13 @@ class CloneRepositoryTask implements TaskInterface
     public function run(): void
     {
         (new GitWrapper())
-            ->cloneRepository($this->rootDir, sprintf('%s/contao-%s', $this->rootDir, $this->version))
+            ->cloneRepository(dirname($this->buildDir), $this->buildDir)
             ->checkout($this->version)
             ->reset(['hard' => true])
         ;
 
         if (null !== $this->logger) {
-            $this->logger->notice(sprintf('Cloned the repository into the "contao-%s" folder.', $this->version));
+            $this->logger->notice(sprintf('Cloned the repository into the "%s" folder.', basename($this->buildDir)));
         }
     }
 }

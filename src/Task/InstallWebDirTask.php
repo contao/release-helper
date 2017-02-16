@@ -12,8 +12,9 @@ declare(strict_types=1);
 
 namespace Contao\ReleaseHelper\Task;
 
-use Contao\ReleaseHelper\Process\ProcessTrait;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 /**
  * Installs the web directory.
@@ -22,17 +23,10 @@ use Psr\Log\LoggerInterface;
  */
 class InstallWebDirTask implements TaskInterface
 {
-    use ProcessTrait;
-
     /**
      * @var string
      */
-    private $rootDir;
-
-    /**
-     * @var string
-     */
-    private $version;
+    private $buildDir;
 
     /**
      * @var LoggerInterface
@@ -42,14 +36,12 @@ class InstallWebDirTask implements TaskInterface
     /**
      * Constructor.
      *
-     * @param string               $rootDir
-     * @param string               $version
+     * @param string               $buildDir
      * @param LoggerInterface|null $logger
      */
-    public function __construct(string $rootDir, string $version, LoggerInterface $logger = null)
+    public function __construct(string $buildDir, LoggerInterface $logger = null)
     {
-        $this->rootDir = $rootDir;
-        $this->version = $version;
+        $this->buildDir = $buildDir;
         $this->logger = $logger;
     }
 
@@ -58,17 +50,16 @@ class InstallWebDirTask implements TaskInterface
      */
     public function run(): void
     {
-        $command = sprintf(
-            '
-                cd %s/contao-%s;
-                mkdir app;
-                vendor/bin/contao-console contao:install-web-dir;
-            ',
-            $this->rootDir,
-            $this->version
-        );
+        if (!is_dir($this->buildDir.'/app')) {
+            mkdir($this->buildDir.'/app');
+        }
 
-        $this->executeCommand($command);
+        $process = new Process('vendor/bin/contao-console contao:install-web-dir', $this->buildDir);
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
 
         if (null !== $this->logger) {
             $this->logger->notice('Installed the web directory.');

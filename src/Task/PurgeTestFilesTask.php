@@ -27,12 +27,7 @@ class PurgeTestFilesTask implements TaskInterface
     /**
      * @var string
      */
-    private $rootDir;
-
-    /**
-     * @var string
-     */
-    private $version;
+    private $buildDir;
 
     /**
      * @var LoggerInterface
@@ -42,14 +37,12 @@ class PurgeTestFilesTask implements TaskInterface
     /**
      * Constructor.
      *
-     * @param string               $rootDir
-     * @param string               $version
+     * @param string               $buildDir
      * @param LoggerInterface|null $logger
      */
-    public function __construct(string $rootDir, string $version, LoggerInterface $logger = null)
+    public function __construct(string $buildDir, LoggerInterface $logger = null)
     {
-        $this->rootDir = $rootDir;
-        $this->version = $version;
+        $this->buildDir = $buildDir;
         $this->logger = $logger;
     }
 
@@ -59,18 +52,16 @@ class PurgeTestFilesTask implements TaskInterface
     public function run(): void
     {
         $fs = new Filesystem();
-        $buildDir = sprintf('%s/contao-%s', $this->rootDir, $this->version);
+        $fs->remove($this->buildDir.'/.git');
 
-        $fs->remove($buildDir.'/.git');
-
-        if (is_dir($buildDir.'/var/cache/prod')) {
-            $fs->remove($buildDir.'/var/cache/prod');
+        if (is_dir($this->buildDir.'/var/cache/prod')) {
+            $fs->remove($this->buildDir.'/var/cache/prod');
         }
 
         /** @var SplFileInfo[] $files */
         $files = (new Finder())
             ->directories()
-            ->in($buildDir.'/vendor/tecnickcom/tcpdf/fonts')
+            ->in($this->buildDir.'/vendor/tecnickcom/tcpdf/fonts')
         ;
 
         foreach ($files as $file) {
@@ -83,7 +74,7 @@ class PurgeTestFilesTask implements TaskInterface
             ->notName('courier.php')
             ->notName('freeserif*.*')
             ->notName('helvetica*.php')
-            ->in($buildDir.'/vendor/tecnickcom/tcpdf/fonts')
+            ->in($this->buildDir.'/vendor/tecnickcom/tcpdf/fonts')
         ;
 
         foreach ($files as $file) {
@@ -102,7 +93,7 @@ class PurgeTestFilesTask implements TaskInterface
             ->name('tests')
             ->name('Test')
             ->name('Tests')
-            ->in($buildDir.'/vendor')
+            ->in($this->buildDir.'/vendor')
         ;
 
         foreach ($files as $file) {
