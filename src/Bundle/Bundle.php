@@ -74,10 +74,18 @@ class Bundle
      * Releases the bundle.
      *
      * @param string $version
+     *
+     * @throws \RuntimeException
      */
     public function release(string $version): void
     {
         $branchName = $this->getBranchName();
+
+        if ('master' !== $branchName && 0 !== strncmp('hotfix/', $branchName, 7)) {
+            throw new \RuntimeException(
+                sprintf('The bundle "%s" is currently on branch "%s".', $this->key, $branchName)
+            );
+        }
 
         if (0 === strncmp('hotfix/', $branchName, 7)) {
             if (file_exists($this->path.'/.tx/config')) {
@@ -116,18 +124,10 @@ class Bundle
      * Returns the branch name.
      *
      * @return string
-     *
-     * @throws \RuntimeException
      */
     private function getBranchName(): string
     {
         $branchName = trim((new GitWrapper())->git('symbolic-ref --short HEAD', $this->path));
-
-        if ('master' !== $branchName && 0 !== strncmp('hotfix/', $branchName, 7)) {
-            throw new \RuntimeException(
-                sprintf('The bundle "%s" is currently on branch "%s".', $this->key, $branchName)
-            );
-        }
 
         if (null !== $this->logger) {
             $this->logger->notice(sprintf('The bundle "%s" is on branch "%s".', $this->key, $branchName));
