@@ -82,7 +82,7 @@ class Edition
         }
 
         (new PurgeTestFilesTask($buildDir, $this->logger))->run();
-        (new PackArchivesTask($buildDir, $version, $this->logger))->run();
+        (new PackArchivesTask($this->rootDir, $version, $this->logger))->run();
         (new RemoveBuildDirTask($buildDir, $this->logger))->run();
     }
 

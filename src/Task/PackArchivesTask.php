@@ -27,7 +27,7 @@ class PackArchivesTask implements TaskInterface
     /**
      * @var string
      */
-    private $buildDir;
+    private $rootDir;
 
     /**
      * @var string
@@ -42,13 +42,13 @@ class PackArchivesTask implements TaskInterface
     /**
      * Constructor.
      *
-     * @param string               $buildDir
+     * @param string               $rootDir
      * @param string               $version
      * @param LoggerInterface|null $logger
      */
-    public function __construct(string $buildDir, string $version, LoggerInterface $logger = null)
+    public function __construct(string $rootDir, string $version, LoggerInterface $logger = null)
     {
-        $this->buildDir = $buildDir;
+        $this->rootDir = $rootDir;
         $this->version = $version;
         $this->logger = $logger;
     }
@@ -87,7 +87,7 @@ class PackArchivesTask implements TaskInterface
                 $this->version,
                 $this->version
             ),
-            $this->buildDir
+            $this->rootDir
         );
 
         $process->run();
@@ -118,7 +118,7 @@ class PackArchivesTask implements TaskInterface
                 $this->version,
                 $this->version
             ),
-            $this->buildDir
+            $this->rootDir
         );
 
         $process->run();

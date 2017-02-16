@@ -15,7 +15,6 @@ namespace Contao\ReleaseHelper\Task;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Finder\SplFileInfo;
 
 /**
  * Purges the test files.
@@ -58,18 +57,14 @@ class PurgeTestFilesTask implements TaskInterface
             $fs->remove($this->buildDir.'/var/cache/prod');
         }
 
-        /** @var SplFileInfo[] $files */
-        $files = (new Finder())
+        $finder = (new Finder())
             ->directories()
             ->in($this->buildDir.'/vendor/tecnickcom/tcpdf/fonts')
         ;
 
-        foreach ($files as $file) {
-            $fs->remove($file->getPathname());
-        }
+        $fs->remove($finder->getIterator());
 
-        /** @var SplFileInfo[] $files */
-        $files = (new Finder())
+        $finder = (new Finder())
             ->files()
             ->notName('courier.php')
             ->notName('freeserif*.*')
@@ -77,12 +72,9 @@ class PurgeTestFilesTask implements TaskInterface
             ->in($this->buildDir.'/vendor/tecnickcom/tcpdf/fonts')
         ;
 
-        foreach ($files as $file) {
-            $fs->remove($file->getPathname());
-        }
+        $fs->remove($finder->getIterator());
 
-        /** @var SplFileInfo[] $files */
-        $files = (new Finder())
+        $finder = (new Finder())
             ->directories()
             ->name('doc')
             ->name('docs')
@@ -93,17 +85,14 @@ class PurgeTestFilesTask implements TaskInterface
             ->name('tests')
             ->name('Test')
             ->name('Tests')
+            ->notPath('twig/lib/Twig')
             ->in($this->buildDir.'/vendor')
         ;
 
-        foreach ($files as $file) {
-            if (is_dir($file->getPathname())) {
-                $fs->remove($file->getPathname());
-            }
-        }
+        $fs->remove($finder->getIterator());
 
         if (null !== $this->logger) {
-            $this->logger->notice('Purged the test files.');
+            $this->logger->notice('Purged the docs and tests folders.');
         }
     }
 }

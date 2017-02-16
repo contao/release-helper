@@ -58,9 +58,7 @@ class InstallDependenciesTask implements TaskInterface
         }
 
         $callback = function ($type, $buffer) {
-            if (Process::OUT === $type && null !== $this->logger) {
-                $this->logger->info($buffer);
-            }
+            $this->logger->info(trim($buffer));
         };
 
         $process = new Process('composer install --prefer-dist --no-dev --no-scripts', $this->buildDir);

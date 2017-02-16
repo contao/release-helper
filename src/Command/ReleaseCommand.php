@@ -65,7 +65,7 @@ class ReleaseCommand extends Command
         }
 
         $status = 0;
-        $logger = new ConsoleLogger($output, [LogLevel::NOTICE => OutputInterface::VERBOSITY_NORMAL]);
+        $logger = new ConsoleLogger($output);
 
         foreach (self::bundles as $key) {
             try {
