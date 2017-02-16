@@ -4,8 +4,59 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "62d10deeed984503f238bd33fbfc5e8e",
+    "content-hash": "53152d24f1d4266419d7e8af8111afce",
     "packages": [
+        {
+            "name": "babdev/transifex",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/BabDev/Transifex-API.git",
+                "reference": "62811cff4341ce8dabb65c13c598b2ee3a013cfd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/BabDev/Transifex-API/zipball/62811cff4341ce8dabb65c13c598b2ee3a013cfd",
+                "reference": "62811cff4341ce8dabb65c13c598b2ee3a013cfd",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^6.2.1",
+                "php": "~7.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "~1.12",
+                "phpunit/phpunit": "~5.4"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "BabDev\\Transifex\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Babker",
+                    "homepage": "https://www.babdev.com"
+                }
+            ],
+            "description": "The Transifex API Package is a wrapper of the Transifex API available for PHP developers",
+            "homepage": "https://github.com/BabDev/Transifex-API",
+            "keywords": [
+                "php",
+                "transifex"
+            ],
+            "time": "2016-12-21T14:20:50+00:00"
+        },
         {
             "name": "cpliakas/git-wrapper",
             "version": "1.7.0",
