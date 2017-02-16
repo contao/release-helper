@@ -13,7 +13,6 @@ declare(strict_types=1);
 namespace Contao\ReleaseHelper\Command;
 
 use Contao\ReleaseHelper\Edition\Edition;
-use Psr\Log\LogLevel;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Logger\ConsoleLogger;

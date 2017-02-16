@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace Contao\ReleaseHelper\Bundle;
 
 use Contao\ReleaseHelper\Task\MergeHotfixBranchTask;
+use Contao\ReleaseHelper\Task\SwitchBranchTask;
 use Contao\ReleaseHelper\Task\TagMasterBranchTask;
 use Contao\ReleaseHelper\Task\TransifexSyncTask;
 use Contao\ReleaseHelper\Task\UpdateChangelogTask;
@@ -88,6 +89,16 @@ class Bundle
         }
 
         (new TagMasterBranchTask($this->path, $version, $this->logger))->run();
+    }
+
+    /**
+     * Switches the branch.
+     *
+     * @param string $target
+     */
+    public function switchBranch(string $target): void
+    {
+        (new SwitchBranchTask($this->path, $target, $this->logger))->run();
     }
 
     /**

@@ -20,11 +20,11 @@ use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Releases a new Contao version.
+ * Switches the bundle branches.
  *
  * @author Leo Feyer <https://github.com/leofeyer>
  */
-class ReleaseCommand extends Command
+class SwitchBranchCommand extends Command
 {
     const bundles = [
         'contao/core-bundle',
@@ -44,11 +44,11 @@ class ReleaseCommand extends Command
     protected function configure(): void
     {
         $this
-            ->setName('release')
+            ->setName('switch')
             ->setDefinition([
-                new InputArgument('version', InputArgument::REQUIRED, 'The version number'),
+                new InputArgument('branch', InputArgument::REQUIRED, 'The target branch'),
             ])
-            ->setDescription('Releases a new Contao version')
+            ->setDescription('Switches the bundle branches')
         ;
     }
 
@@ -69,7 +69,7 @@ class ReleaseCommand extends Command
         foreach (self::bundles as $key) {
             try {
                 (new Bundle($key, $rootDir, $logger))
-                    ->release($input->getArgument('version'))
+                    ->switchBranch($input->getArgument('branch'))
                 ;
             } catch (\RuntimeException $e) {
                 $status = 1;
