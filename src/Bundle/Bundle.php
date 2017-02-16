@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace Contao\ReleaseHelper\Bundle;
 
+use Contao\ReleaseHelper\Task\CommitChangesTask;
 use Contao\ReleaseHelper\Task\MergeHotfixBranchTask;
 use Contao\ReleaseHelper\Task\SwitchBranchTask;
 use Contao\ReleaseHelper\Task\TagMasterBranchTask;
@@ -99,6 +100,16 @@ class Bundle
     public function switchBranch(string $target): void
     {
         (new SwitchBranchTask($this->path, $target, $this->logger))->run();
+    }
+
+    /**
+     * Commits the current changes.
+     *
+     * @param string $message
+     */
+    public function commitChanges(string $message): void
+    {
+        (new CommitChangesTask($this->path, $this->getBranchName(), $message, $this->logger))->run();
     }
 
     /**
