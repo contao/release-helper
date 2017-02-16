@@ -69,7 +69,7 @@ class UpdateCommand extends Command
 
         $updater = new Updater(null, false);
         $updater->setStrategy(Updater::STRATEGY_GITHUB);
-        $updater->setBackupPath($backupPath);
+        $updater->setBackupPath($backupPath.'/old.phar');
 
         /** @var GithubStrategy $strategy */
         $strategy = $updater->getStrategy();
