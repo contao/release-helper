@@ -12,13 +12,13 @@ declare(strict_types=1);
 
 namespace Contao\ReleaseHelper\Edition;
 
-use Contao\ReleaseHelper\Process\ProcessTrait;
 use Contao\ReleaseHelper\Task\CloneRepositoryTask;
 use Contao\ReleaseHelper\Task\InstallDependenciesTask;
 use Contao\ReleaseHelper\Task\InstallWebDirTask;
 use Contao\ReleaseHelper\Task\PackArchivesTask;
 use Contao\ReleaseHelper\Task\PurgeTestFilesTask;
 use Contao\ReleaseHelper\Task\RemoveBuildDirTask;
+use GitWrapper\GitWrapper;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -28,8 +28,6 @@ use Psr\Log\LoggerInterface;
  */
 class Edition
 {
-    use ProcessTrait;
-
     const STANDARD_EDITION = 'standard-edition';
     const MANAGED_EDITION = 'managed-edition';
 
@@ -94,14 +92,6 @@ class Edition
      */
     private function getVersion(): string
     {
-        $command = sprintf(
-            '
-                cd %s;
-                git describe --tags;
-            ',
-            $this->rootDir
-        );
-
-        return trim($this->executeCommand($command)->getOutput());
+        return trim((new GitWrapper())->git('describe --tags', $this->rootDir));
     }
 }

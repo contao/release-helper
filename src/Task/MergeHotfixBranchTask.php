@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 namespace Contao\ReleaseHelper\Task;
 
-use Contao\ReleaseHelper\Process\ProcessTrait;
+use GitWrapper\GitWrapper;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -22,12 +22,10 @@ use Psr\Log\LoggerInterface;
  */
 class MergeHotfixBranchTask implements TaskInterface
 {
-    use ProcessTrait;
-
     /**
      * @var string
      */
-    private $bundleDir;
+    private $rootDir;
 
     /**
      * @var string
@@ -42,13 +40,13 @@ class MergeHotfixBranchTask implements TaskInterface
     /**
      * Constructor.
      *
-     * @param string               $bundleDir
+     * @param string               $rootDir
      * @param string               $branchName
      * @param LoggerInterface|null $logger
      */
-    public function __construct(string $bundleDir, string $branchName, LoggerInterface $logger = null)
+    public function __construct(string $rootDir, string $branchName, LoggerInterface $logger = null)
     {
-        $this->bundleDir = $bundleDir;
+        $this->rootDir = $rootDir;
         $this->branchName = $branchName;
         $this->logger = $logger;
     }
@@ -58,23 +56,15 @@ class MergeHotfixBranchTask implements TaskInterface
      */
     public function run(): void
     {
-        $command = sprintf(
-            '
-                cd %s;
-                git add -A;
-                git commit -m "Bump the version number.";
-                git push origin %s;
-                git checkout master;
-                git merge -m "Merge branch \'%s\'" %s;
-                git push origin master;
-            ',
-            $this->bundleDir,
-            $this->branchName,
-            $this->branchName,
-            $this->branchName
-        );
-
-        $this->executeCommand($command);
+        (new GitWrapper())
+            ->workingCopy($this->rootDir)
+            ->add('-A')
+            ->commit('Bump the version number.')
+            ->push('origin', $this->branchName)
+            ->checkout('master')
+            ->merge($this->branchName, ['m' => sprintf("Merge branch '%s'", $this->branchName)])
+            ->push('origin', 'master')
+        ;
 
         if (null !== $this->logger) {
             $this->logger->notice('Merged the hotfix branch.');

@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 namespace Contao\ReleaseHelper\Task;
 
-use Contao\ReleaseHelper\Process\ProcessTrait;
+use GitWrapper\GitWrapper;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -22,8 +22,6 @@ use Psr\Log\LoggerInterface;
  */
 class CloneRepositoryTask implements TaskInterface
 {
-    use ProcessTrait;
-
     /**
      * @var string
      */
@@ -58,21 +56,11 @@ class CloneRepositoryTask implements TaskInterface
      */
     public function run(): void
     {
-        $command = sprintf(
-            '
-                cd %s;
-                git clone . contao-%s;
-                cd contao-%s;
-                git checkout --quiet %s;
-                git reset --hard;
-            ',
-            $this->rootDir,
-            $this->version,
-            $this->version,
-            $this->version
-        );
-
-        $this->executeCommand($command);
+        (new GitWrapper())
+            ->cloneRepository($this->rootDir, sprintf('%s/contao-%s', $this->rootDir, $this->version))
+            ->checkout($this->version)
+            ->reset(['hard' => true])
+        ;
 
         if (null !== $this->logger) {
             $this->logger->notice(sprintf('Cloned the repository into the "contao-%s" folder.', $this->version));
