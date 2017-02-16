@@ -12,8 +12,8 @@ declare(strict_types=1);
 
 namespace Contao\ReleaseHelper\Task;
 
-use Contao\ReleaseHelper\Process\ProcessTrait;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * Removes the build directory.
@@ -22,8 +22,6 @@ use Psr\Log\LoggerInterface;
  */
 class RemoveBuildDirTask implements TaskInterface
 {
-    use ProcessTrait;
-
     /**
      * @var string
      */
@@ -58,15 +56,7 @@ class RemoveBuildDirTask implements TaskInterface
      */
     public function run(): void
     {
-        $command = sprintf(
-            '
-                rm -rf %s/contao-%s;
-            ',
-            $this->rootDir,
-            $this->version
-        );
-
-        $this->executeCommand($command);
+        (new Filesystem())->remove(sprintf('%s/contao-%s', $this->rootDir, $this->version));
 
         if (null !== $this->logger) {
             $this->logger->notice('Removed the build directory.');

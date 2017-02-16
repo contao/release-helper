@@ -12,8 +12,10 @@ declare(strict_types=1);
 
 namespace Contao\ReleaseHelper\Task;
 
-use Contao\ReleaseHelper\Process\ProcessTrait;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 
 /**
  * Purges the test files.
@@ -22,8 +24,6 @@ use Psr\Log\LoggerInterface;
  */
 class PurgeTestFilesTask implements TaskInterface
 {
-    use ProcessTrait;
-
     /**
      * @var string
      */
@@ -58,20 +58,58 @@ class PurgeTestFilesTask implements TaskInterface
      */
     public function run(): void
     {
-        $command = sprintf(
-            '
-                cd %s/contao-%s;
-                rm -rf .git;
-                [ -e var/cache/prod ] && rm -r var/cache/prod;
-                find vendor/tecnickcom/tcpdf/fonts -d -type d -mindepth 1 -exec rm -r {} \;
-                find vendor/tecnickcom/tcpdf/fonts -d -type f ! -name "courier.php" ! -name "freeserif*.*" ! -name "helvetica*.php" -exec rm {} \;
-                find -E -d vendor -type d -iregex ".*/(docs?|examples|notes|sites|tests?)" -exec rm -r {} \;
-            ',
-            $this->rootDir,
-            $this->version
-        );
+        $fs = new Filesystem();
+        $buildDir = sprintf('%s/contao-%s', $this->rootDir, $this->version);
 
-        $this->executeCommand($command);
+        $fs->remove($buildDir.'/.git');
+
+        if (is_dir($buildDir.'/var/cache/prod')) {
+            $fs->remove($buildDir.'/var/cache/prod');
+        }
+
+        /** @var SplFileInfo[] $files */
+        $files = (new Finder())
+            ->directories()
+            ->in($buildDir.'/vendor/tecnickcom/tcpdf/fonts')
+        ;
+
+        foreach ($files as $file) {
+            $fs->remove($file->getPathname());
+        }
+
+        /** @var SplFileInfo[] $files */
+        $files = (new Finder())
+            ->files()
+            ->notName('courier.php')
+            ->notName('freeserif*.*')
+            ->notName('helvetica*.php')
+            ->in($buildDir.'/vendor/tecnickcom/tcpdf/fonts')
+        ;
+
+        foreach ($files as $file) {
+            $fs->remove($file->getPathname());
+        }
+
+        /** @var SplFileInfo[] $files */
+        $files = (new Finder())
+            ->directories()
+            ->name('doc')
+            ->name('docs')
+            ->name('examples')
+            ->name('notes')
+            ->name('sites')
+            ->name('test')
+            ->name('tests')
+            ->name('Test')
+            ->name('Tests')
+            ->in($buildDir.'/vendor')
+        ;
+
+        foreach ($files as $file) {
+            if (is_dir($file->getPathname())) {
+                $fs->remove($file->getPathname());
+            }
+        }
 
         if (null !== $this->logger) {
             $this->logger->notice('Purged the test files.');
