@@ -56,11 +56,17 @@ class MergeHotfixBranchTask implements TaskInterface
      */
     public function run(): void
     {
-        (new GitWrapper())
-            ->workingCopy($this->rootDir)
-            ->add('-A')
-            ->commit('Bump the version number.')
-            ->push('origin', $this->branchName)
+        $workingCopy = (new GitWrapper())->workingCopy($this->rootDir);
+
+        if ($workingCopy->hasChanges()) {
+            $workingCopy
+                ->add('-A')
+                ->commit('Bump the version number.')
+                ->push('origin', $this->branchName)
+            ;
+        }
+
+        $workingCopy
             ->checkout('master')
             ->merge($this->branchName, ['m' => sprintf("Merge branch '%s'", $this->branchName)])
             ->push('origin', 'master')

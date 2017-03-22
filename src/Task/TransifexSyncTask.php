@@ -66,6 +66,10 @@ class TransifexSyncTask implements TaskInterface
      */
     public function run(): void
     {
+        if (!file_exists($this->rootDir.'/.tx/config')) {
+            return;
+        }
+
         $languages = $this->getLanguages();
 
         foreach ($languages as $language) {

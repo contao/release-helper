@@ -88,10 +88,7 @@ class Bundle
         }
 
         if (0 === strncmp('hotfix/', $branchName, 7)) {
-            if (file_exists($this->path.'/.tx/config')) {
-                (new TransifexSyncTask($this->path, $this->logger))->run();
-            }
-
+            (new TransifexSyncTask($this->path, $this->logger))->run();
             (new UpdateChangelogTask($this->path, $version, $this->logger))->run();
             (new UpdateConstantsTask($this->path, $version, $this->logger))->run();
             (new MergeHotfixBranchTask($this->path, $branchName, $this->logger))->run();
