@@ -73,7 +73,7 @@ class MergeHotfixBranchTask implements TaskInterface
         ;
 
         if (null !== $this->logger) {
-            $this->logger->notice('Merged the hotfix branch.');
+            $this->logger->notice(sprintf('Merged the %s branch.', $this->branchName));
         }
     }
 }

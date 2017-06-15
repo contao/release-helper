@@ -81,13 +81,16 @@ class Bundle
     {
         $branchName = $this->getBranchName();
 
-        if ('master' !== $branchName && 0 !== strncmp('hotfix/', $branchName, 7)) {
+        if ('master' !== $branchName
+            && 0 !== strncmp('hotfix/', $branchName, 7)
+            && 0 !== strncmp('release/', $branchName, 7)
+        ) {
             throw new \RuntimeException(
                 sprintf('The bundle "%s" is currently on branch "%s".', $this->key, $branchName)
             );
         }
 
-        if (0 === strncmp('hotfix/', $branchName, 7)) {
+        if ('master' !== $branchName) {
             (new TransifexSyncTask($this->path, $this->logger))->run();
             (new UpdateChangelogTask($this->path, $version, $this->logger))->run();
             (new UpdateConstantsTask($this->path, $version, $this->logger))->run();
