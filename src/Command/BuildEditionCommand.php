@@ -17,7 +17,6 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ChoiceQuestion;
 
 /**
  * Builds a Contao edition.
@@ -33,7 +32,7 @@ class BuildEditionCommand extends Command
     {
         $this
             ->setName('build')
-            ->setDescription('Builds a Contao edition')
+            ->setDescription('Builds the Contao managed edition')
         ;
     }
 
@@ -51,16 +50,8 @@ class BuildEditionCommand extends Command
         $status = 0;
         $logger = new ConsoleLogger($output);
 
-        $question = new ChoiceQuestion(
-            'Please select an edition:',
-            [Edition::STANDARD_EDITION, Edition::MANAGED_EDITION]
-        );
-
-        $helper = $this->getHelper('question');
-        $type = $helper->ask($input, $output, $question);
-
         try {
-            (new Edition($type, $rootDir, $logger))->build();
+            (new Edition($rootDir, $logger))->build();
         } catch (\RuntimeException $e) {
             $status = 1;
             $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));

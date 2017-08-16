@@ -28,14 +28,6 @@ use Psr\Log\LoggerInterface;
  */
 class Edition
 {
-    const STANDARD_EDITION = 'standard-edition';
-    const MANAGED_EDITION = 'managed-edition';
-
-    /**
-     * @var string
-     */
-    private $type;
-
     /**
      * @var string
      */
@@ -49,21 +41,13 @@ class Edition
     /**
      * Constructor.
      *
-     * @param string               $type
      * @param string               $rootDir
      * @param LoggerInterface|null $logger
-     *
-     * @throws \RuntimeException
      */
-    public function __construct(string $type, string $rootDir, LoggerInterface $logger = null)
+    public function __construct(string $rootDir, LoggerInterface $logger = null)
     {
-        $this->type = $type;
         $this->rootDir = $rootDir;
         $this->logger = $logger;
-
-        if ($type !== self::STANDARD_EDITION && $type !== self::MANAGED_EDITION) {
-            throw new \RuntimeException(sprintf('Invalid edition type "%s".', $type));
-        }
     }
 
     /**
@@ -76,11 +60,7 @@ class Edition
 
         (new CloneRepositoryTask($buildDir, $version, $this->logger))->run();
         (new InstallDependenciesTask($buildDir, $this->logger))->run();
-
-        if ($this->type === self::MANAGED_EDITION) {
-            (new InstallWebDirTask($buildDir, $this->logger))->run();
-        }
-
+        (new InstallWebDirTask($buildDir, $this->logger))->run();
         (new PurgeTestFilesTask($buildDir, $this->logger))->run();
         (new PackArchivesTask($this->rootDir, $version, $this->logger))->run();
         (new RemoveBuildDirTask($buildDir, $this->logger))->run();
