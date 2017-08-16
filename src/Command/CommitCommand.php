@@ -68,9 +68,7 @@ class CommitCommand extends Command
 
         foreach (self::bundles as $key) {
             try {
-                (new Bundle($key, $rootDir, $logger))
-                    ->commitChanges($input->getArgument('message'))
-                ;
+                (new Bundle($key, $rootDir, $logger))->commitChanges($input->getArgument('message'));
             } catch (\RuntimeException $e) {
                 $status = 1;
                 $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));

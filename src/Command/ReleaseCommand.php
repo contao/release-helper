@@ -68,9 +68,7 @@ class ReleaseCommand extends Command
 
         foreach (self::bundles as $key) {
             try {
-                (new Bundle($key, $rootDir, $logger))
-                    ->release($input->getArgument('version'))
-                ;
+                (new Bundle($key, $rootDir, $logger))->release($input->getArgument('version'));
             } catch (\RuntimeException $e) {
                 $status = 1;
                 $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));

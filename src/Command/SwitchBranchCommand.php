@@ -68,9 +68,7 @@ class SwitchBranchCommand extends Command
 
         foreach (self::bundles as $key) {
             try {
-                (new Bundle($key, $rootDir, $logger))
-                    ->switchBranch($input->getArgument('branch'))
-                ;
+                (new Bundle($key, $rootDir, $logger))->switchBranch($input->getArgument('branch'));
             } catch (\RuntimeException $e) {
                 $status = 1;
                 $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
