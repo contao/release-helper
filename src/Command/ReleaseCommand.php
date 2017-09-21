@@ -19,14 +19,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * Releases a new Contao version.
- *
- * @author Leo Feyer <https://github.com/leofeyer>
- */
 class ReleaseCommand extends Command
 {
-    const bundles = [
+    public const bundles = [
         'contao/core-bundle',
         'contao/calendar-bundle',
         'contao/comments-bundle',
@@ -37,20 +32,6 @@ class ReleaseCommand extends Command
         'contao/news-bundle',
         'contao/newsletter-bundle',
     ];
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure(): void
-    {
-        $this
-            ->setName('release')
-            ->setDefinition([
-                new InputArgument('version', InputArgument::REQUIRED, 'The version number'),
-            ])
-            ->setDescription('Releases a new Contao version')
-        ;
-    }
 
     /**
      * {@inheritdoc}
@@ -76,5 +57,19 @@ class ReleaseCommand extends Command
         }
 
         return $status;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function configure(): void
+    {
+        $this
+            ->setName('release')
+            ->setDefinition([
+                new InputArgument('version', InputArgument::REQUIRED, 'The version number'),
+            ])
+            ->setDescription('Releases a new Contao version')
+        ;
     }
 }

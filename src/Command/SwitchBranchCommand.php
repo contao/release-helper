@@ -19,14 +19,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * Switches the bundle branches.
- *
- * @author Leo Feyer <https://github.com/leofeyer>
- */
 class SwitchBranchCommand extends Command
 {
-    const bundles = [
+    public const bundles = [
         'contao/core-bundle',
         'contao/calendar-bundle',
         'contao/comments-bundle',
@@ -37,20 +32,6 @@ class SwitchBranchCommand extends Command
         'contao/news-bundle',
         'contao/newsletter-bundle',
     ];
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure(): void
-    {
-        $this
-            ->setName('switch')
-            ->setDefinition([
-                new InputArgument('branch', InputArgument::REQUIRED, 'The target branch'),
-            ])
-            ->setDescription('Switches the bundle branches')
-        ;
-    }
 
     /**
      * {@inheritdoc}
@@ -76,5 +57,19 @@ class SwitchBranchCommand extends Command
         }
 
         return $status;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function configure(): void
+    {
+        $this
+            ->setName('switch')
+            ->setDefinition([
+                new InputArgument('branch', InputArgument::REQUIRED, 'The target branch'),
+            ])
+            ->setDescription('Switches the bundle branches')
+        ;
     }
 }

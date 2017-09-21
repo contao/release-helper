@@ -15,11 +15,6 @@ namespace Contao\ReleaseHelper\Task;
 use GitWrapper\GitWrapper;
 use Psr\Log\LoggerInterface;
 
-/**
- * Clones the repository.
- *
- * @author Leo Feyer <https://github.com/leofeyer>
- */
 class CloneRepositoryTask implements TaskInterface
 {
     /**
@@ -38,8 +33,6 @@ class CloneRepositoryTask implements TaskInterface
     private $logger;
 
     /**
-     * Constructor.
-     *
      * @param string               $buildDir
      * @param string               $version
      * @param LoggerInterface|null $logger

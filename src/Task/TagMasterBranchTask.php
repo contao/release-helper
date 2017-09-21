@@ -15,11 +15,6 @@ namespace Contao\ReleaseHelper\Task;
 use GitWrapper\GitWrapper;
 use Psr\Log\LoggerInterface;
 
-/**
- * Tags the master branch.
- *
- * @author Leo Feyer <https://github.com/leofeyer>
- */
 class TagMasterBranchTask implements TaskInterface
 {
     /**
@@ -38,8 +33,6 @@ class TagMasterBranchTask implements TaskInterface
     private $logger;
 
     /**
-     * Constructor.
-     *
      * @param string               $rootDir
      * @param string               $version
      * @param LoggerInterface|null $logger

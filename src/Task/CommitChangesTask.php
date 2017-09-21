@@ -15,11 +15,6 @@ namespace Contao\ReleaseHelper\Task;
 use GitWrapper\GitWrapper;
 use Psr\Log\LoggerInterface;
 
-/**
- * Commits the current changes.
- *
- * @author Leo Feyer <https://github.com/leofeyer>
- */
 class CommitChangesTask implements TaskInterface
 {
     /**
@@ -43,8 +38,6 @@ class CommitChangesTask implements TaskInterface
     private $logger;
 
     /**
-     * Constructor.
-     *
      * @param string               $rootDir
      * @param string               $branchName
      * @param string               $message

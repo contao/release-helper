@@ -12,11 +12,6 @@ declare(strict_types=1);
 
 namespace Contao\ReleaseHelper\Task;
 
-/**
- * Task interface.
- *
- * @author Leo Feyer <https://github.com/leofeyer>
- */
 interface TaskInterface
 {
     /**

@@ -15,11 +15,6 @@ namespace Contao\ReleaseHelper\Task;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
-/**
- * Removes the build directory.
- *
- * @author Leo Feyer <https://github.com/leofeyer>
- */
 class RemoveBuildDirTask implements TaskInterface
 {
     /**
@@ -33,8 +28,6 @@ class RemoveBuildDirTask implements TaskInterface
     private $logger;
 
     /**
-     * Constructor.
-     *
      * @param string               $buildDir
      * @param LoggerInterface|null $logger
      */

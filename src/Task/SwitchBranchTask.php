@@ -15,11 +15,6 @@ namespace Contao\ReleaseHelper\Task;
 use GitWrapper\GitWrapper;
 use Psr\Log\LoggerInterface;
 
-/**
- * Switches the branch.
- *
- * @author Leo Feyer <https://github.com/leofeyer>
- */
 class SwitchBranchTask implements TaskInterface
 {
     /**
@@ -38,8 +33,6 @@ class SwitchBranchTask implements TaskInterface
     private $logger;
 
     /**
-     * Constructor.
-     *
      * @param string               $rootDir
      * @param string               $branch
      * @param LoggerInterface|null $logger

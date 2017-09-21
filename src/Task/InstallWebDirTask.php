@@ -16,11 +16,6 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
-/**
- * Installs the web directory.
- *
- * @author Leo Feyer <https://github.com/leofeyer>
- */
 class InstallWebDirTask implements TaskInterface
 {
     /**
@@ -34,8 +29,6 @@ class InstallWebDirTask implements TaskInterface
     private $logger;
 
     /**
-     * Constructor.
-     *
      * @param string               $buildDir
      * @param LoggerInterface|null $logger
      */

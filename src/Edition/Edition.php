@@ -21,11 +21,6 @@ use Contao\ReleaseHelper\Task\RemoveBuildDirTask;
 use GitWrapper\GitWrapper;
 use Psr\Log\LoggerInterface;
 
-/**
- * Edition class.
- *
- * @author Leo Feyer <https://github.com/leofeyer>
- */
 class Edition
 {
     /**
@@ -39,8 +34,6 @@ class Edition
     private $logger;
 
     /**
-     * Constructor.
-     *
      * @param string               $rootDir
      * @param LoggerInterface|null $logger
      */

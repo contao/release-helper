@@ -19,14 +19,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * Commits the current changes.
- *
- * @author Leo Feyer <https://github.com/leofeyer>
- */
 class CommitCommand extends Command
 {
-    const bundles = [
+    public const bundles = [
         'contao/core-bundle',
         'contao/calendar-bundle',
         'contao/comments-bundle',
@@ -37,20 +32,6 @@ class CommitCommand extends Command
         'contao/news-bundle',
         'contao/newsletter-bundle',
     ];
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure(): void
-    {
-        $this
-            ->setName('commit')
-            ->setDefinition([
-                new InputArgument('message', InputArgument::REQUIRED, 'The commit message'),
-            ])
-            ->setDescription('Commits the current changes')
-        ;
-    }
 
     /**
      * {@inheritdoc}
@@ -76,5 +57,19 @@ class CommitCommand extends Command
         }
 
         return $status;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function configure(): void
+    {
+        $this
+            ->setName('commit')
+            ->setDefinition([
+                new InputArgument('message', InputArgument::REQUIRED, 'The commit message'),
+            ])
+            ->setDescription('Commits the current changes')
+        ;
     }
 }

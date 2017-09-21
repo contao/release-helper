@@ -19,13 +19,20 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * Updates the .phar file.
- *
- * @author Leo Feyer <https://github.com/leofeyer>
- */
 class UpdateCommand extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function execute(InputInterface $input, OutputInterface $output): int
+    {
+        if ($input->hasOption('rollback') && true === $input->getOption('rollback')) {
+            return $this->rollback($output);
+        }
+
+        return $this->update($output);
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -38,18 +45,6 @@ class UpdateCommand extends Command
             ])
             ->setDescription('Updates the .phar file')
         ;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function execute(InputInterface $input, OutputInterface $output): int
-    {
-        if ($input->hasOption('rollback') && true === $input->getOption('rollback')) {
-            return $this->rollback($output);
-        }
-
-        return $this->update($output);
     }
 
     /**
@@ -115,10 +110,9 @@ class UpdateCommand extends Command
             $output->writeln('<info>Successfully rolled back to the previous version.</info>');
 
             return 0;
-        } else {
-            $output->writeln('<error>Could not roll back to the previous version.</error>');
-
-            return 1;
         }
+        $output->writeln('<error>Could not roll back to the previous version.</error>');
+
+        return 1;
     }
 }

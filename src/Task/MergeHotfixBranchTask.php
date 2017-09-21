@@ -15,11 +15,6 @@ namespace Contao\ReleaseHelper\Task;
 use GitWrapper\GitWrapper;
 use Psr\Log\LoggerInterface;
 
-/**
- * Merges the hotfix branch.
- *
- * @author Leo Feyer <https://github.com/leofeyer>
- */
 class MergeHotfixBranchTask implements TaskInterface
 {
     /**
@@ -38,8 +33,6 @@ class MergeHotfixBranchTask implements TaskInterface
     private $logger;
 
     /**
-     * Constructor.
-     *
      * @param string               $rootDir
      * @param string               $branchName
      * @param LoggerInterface|null $logger

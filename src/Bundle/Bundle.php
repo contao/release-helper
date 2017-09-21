@@ -22,11 +22,6 @@ use Contao\ReleaseHelper\Task\UpdateConstantsTask;
 use GitWrapper\GitWrapper;
 use Psr\Log\LoggerInterface;
 
-/**
- * Bundle class.
- *
- * @author Leo Feyer <https://github.com/leofeyer>
- */
 class Bundle
 {
     /**
@@ -50,8 +45,6 @@ class Bundle
     private $logger;
 
     /**
-     * Constructor.
-     *
      * @param string               $key
      * @param string               $rootDir
      * @param LoggerInterface|null $logger

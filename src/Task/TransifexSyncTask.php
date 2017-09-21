@@ -19,11 +19,6 @@ use GuzzleHttp\Exception\ClientException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
-/**
- * Synchronizes the translations.
- *
- * @author Leo Feyer <https://github.com/leofeyer>
- */
 class TransifexSyncTask implements TaskInterface
 {
     /**
@@ -47,8 +42,6 @@ class TransifexSyncTask implements TaskInterface
     private $transifex;
 
     /**
-     * Constructor.
-     *
      * @param string               $rootDir
      * @param LoggerInterface|null $logger
      */

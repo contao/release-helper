@@ -17,11 +17,6 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 
-/**
- * Packs the .zip and .tar.gz archive.
- *
- * @author Leo Feyer <https://github.com/leofeyer>
- */
 class PackArchivesTask implements TaskInterface
 {
     /**
@@ -40,8 +35,6 @@ class PackArchivesTask implements TaskInterface
     private $logger;
 
     /**
-     * Constructor.
-     *
      * @param string               $rootDir
      * @param string               $version
      * @param LoggerInterface|null $logger

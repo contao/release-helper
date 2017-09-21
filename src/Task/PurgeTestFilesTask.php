@@ -16,11 +16,6 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 
-/**
- * Purges the test files.
- *
- * @author Leo Feyer <https://github.com/leofeyer>
- */
 class PurgeTestFilesTask implements TaskInterface
 {
     /**
@@ -34,8 +29,6 @@ class PurgeTestFilesTask implements TaskInterface
     private $logger;
 
     /**
-     * Constructor.
-     *
      * @param string               $buildDir
      * @param LoggerInterface|null $logger
      */

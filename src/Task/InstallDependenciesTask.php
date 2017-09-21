@@ -17,11 +17,6 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 
-/**
- * Installs the dependencies.
- *
- * @author Leo Feyer <https://github.com/leofeyer>
- */
 class InstallDependenciesTask implements TaskInterface
 {
     /**
@@ -35,8 +30,6 @@ class InstallDependenciesTask implements TaskInterface
     private $logger;
 
     /**
-     * Constructor.
-     *
      * @param string               $buildDir
      * @param LoggerInterface|null $logger
      */
@@ -57,7 +50,7 @@ class InstallDependenciesTask implements TaskInterface
             throw new \RuntimeException('The composer executable could not be found.');
         }
 
-        $callback = function ($type, $buffer) {
+        $callback = function (string $type, string $buffer): void {
             $this->logger->info(trim($buffer));
         };
 

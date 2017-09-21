@@ -14,11 +14,6 @@ namespace Contao\ReleaseHelper\Task;
 
 use Psr\Log\LoggerInterface;
 
-/**
- * Updates the constants.php file.
- *
- * @author Leo Feyer <https://github.com/leofeyer>
- */
 class UpdateConstantsTask implements TaskInterface
 {
     /**
@@ -37,8 +32,6 @@ class UpdateConstantsTask implements TaskInterface
     private $logger;
 
     /**
-     * Constructor.
-     *
      * @param string               $rootDir
      * @param string               $version
      * @param LoggerInterface|null $logger

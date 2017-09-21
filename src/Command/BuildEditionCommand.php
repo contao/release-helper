@@ -18,24 +18,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * Builds a Contao edition.
- *
- * @author Leo Feyer <https://github.com/leofeyer>
- */
 class BuildEditionCommand extends Command
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure(): void
-    {
-        $this
-            ->setName('build')
-            ->setDescription('Builds the Contao managed edition')
-        ;
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -58,5 +42,16 @@ class BuildEditionCommand extends Command
         }
 
         return $status;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function configure(): void
+    {
+        $this
+            ->setName('build')
+            ->setDescription('Builds the Contao managed edition')
+        ;
     }
 }
