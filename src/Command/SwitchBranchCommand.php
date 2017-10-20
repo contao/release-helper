@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace Contao\ReleaseHelper\Command;
 
 use Contao\ReleaseHelper\Bundle\Bundle;
+use Contao\ReleaseHelper\Edition\Edition;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,18 +22,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class SwitchBranchCommand extends Command
 {
-    public const bundles = [
-        'contao/core-bundle',
-        'contao/calendar-bundle',
-        'contao/comments-bundle',
-        'contao/faq-bundle',
-        'contao/installation-bundle',
-        'contao/listing-bundle',
-        'contao/manager-bundle',
-        'contao/news-bundle',
-        'contao/newsletter-bundle',
-    ];
-
     /**
      * {@inheritdoc}
      */
@@ -47,7 +36,7 @@ class SwitchBranchCommand extends Command
         $status = 0;
         $logger = new ConsoleLogger($output);
 
-        foreach (self::bundles as $key) {
+        foreach (Edition::BUNDLES as $key) {
             try {
                 (new Bundle($key, $rootDir, $logger))->switchBranch($input->getArgument('branch'));
             } catch (\RuntimeException $e) {

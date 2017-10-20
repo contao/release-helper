@@ -23,6 +23,18 @@ use Psr\Log\LoggerInterface;
 
 class Edition
 {
+    public const BUNDLES = [
+        'contao/core-bundle',
+        'contao/calendar-bundle',
+        'contao/comments-bundle',
+        'contao/faq-bundle',
+        'contao/installation-bundle',
+        'contao/listing-bundle',
+        'contao/manager-bundle',
+        'contao/news-bundle',
+        'contao/newsletter-bundle',
+    ];
+
     /**
      * @var string
      */
