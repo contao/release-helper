@@ -54,7 +54,7 @@ class InstallDependenciesTask implements TaskInterface
             $this->logger->info(trim($buffer));
         };
 
-        $process = new Process('composer install --prefer-dist --no-dev --no-scripts', $this->buildDir);
+        $process = new Process($composer.' install --prefer-dist --no-dev --no-scripts', $this->buildDir);
         $process->run($callback);
 
         if (!$process->isSuccessful()) {

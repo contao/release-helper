@@ -50,7 +50,7 @@ class CloneRepositoryTask implements TaskInterface
     public function run(): void
     {
         (new GitWrapper())
-            ->cloneRepository(dirname($this->buildDir), $this->buildDir)
+            ->cloneRepository(\dirname($this->buildDir), $this->buildDir)
             ->checkout($this->version)
             ->reset(['hard' => true])
         ;

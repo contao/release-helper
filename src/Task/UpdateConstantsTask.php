@@ -56,7 +56,7 @@ class UpdateConstantsTask implements TaskInterface
 
         include $constants;
 
-        if (!defined('VERSION') || !defined('BUILD')) {
+        if (!\defined('VERSION') || !\defined('BUILD')) {
             return;
         }
 

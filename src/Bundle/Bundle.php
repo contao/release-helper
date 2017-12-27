@@ -13,9 +13,8 @@ declare(strict_types=1);
 namespace Contao\ReleaseHelper\Bundle;
 
 use Contao\ReleaseHelper\Task\CommitChangesTask;
-use Contao\ReleaseHelper\Task\MergeHotfixBranchTask;
 use Contao\ReleaseHelper\Task\SwitchBranchTask;
-use Contao\ReleaseHelper\Task\TagMasterBranchTask;
+use Contao\ReleaseHelper\Task\TagBranchTask;
 use Contao\ReleaseHelper\Task\TransifexSyncTask;
 use Contao\ReleaseHelper\Task\UpdateChangelogTask;
 use Contao\ReleaseHelper\Task\UpdateConstantsTask;
@@ -28,11 +27,6 @@ class Bundle
      * @var string
      */
     private $key;
-
-    /**
-     * @var string
-     */
-    private $rootDir;
 
     /**
      * @var string
@@ -54,7 +48,6 @@ class Bundle
     public function __construct(string $key, string $rootDir, LoggerInterface $logger = null)
     {
         $this->key = $key;
-        $this->rootDir = $rootDir;
         $this->logger = $logger;
         $this->path = $rootDir.'/vendor/'.$key;
 
@@ -74,23 +67,17 @@ class Bundle
     {
         $branchName = $this->getBranchName();
 
-        if ('master' !== $branchName
-            && 0 !== strncmp('hotfix/', $branchName, 7)
-            && 0 !== strncmp('release/', $branchName, 7)
-        ) {
-            throw new \RuntimeException(
-                sprintf('The bundle "%s" is currently on branch "%s".', $this->key, $branchName)
-            );
+        if (!preg_match('/^\d\.\d$/', $branchName)) {
+            throw new \RuntimeException(sprintf('Cannot process branch "%s"', $branchName));
         }
 
-        if ('master' !== $branchName) {
+        if (!$this->isTaggedCommit()) {
             (new TransifexSyncTask($this->path, $this->logger))->run();
             (new UpdateChangelogTask($this->path, $version, $this->logger))->run();
             (new UpdateConstantsTask($this->path, $version, $this->logger))->run();
-            (new MergeHotfixBranchTask($this->path, $branchName, $this->logger))->run();
         }
 
-        (new TagMasterBranchTask($this->path, $version, $this->logger))->run();
+        (new TagBranchTask($this->path, $version, $this->logger))->run();
     }
 
     /**
@@ -123,9 +110,25 @@ class Bundle
         $branchName = trim((new GitWrapper())->git('symbolic-ref --short HEAD', $this->path));
 
         if (null !== $this->logger) {
-            $this->logger->notice(sprintf('The bundle "%s" is on branch "%s".', $this->key, $branchName));
+            $this->logger->notice(sprintf('Bundle "%s" is on branch "%s".', $this->key, $branchName));
         }
 
         return $branchName;
+    }
+
+    /**
+     * Checks if the current commit is tagged.
+     *
+     * @return bool
+     */
+    private function isTaggedCommit(): bool
+    {
+        $tag = trim((new GitWrapper())->git('name-rev --name-only --tags HEAD', $this->path));
+
+        if (null !== $this->logger && 'undefined' !== $tag) {
+            $this->logger->notice(sprintf('No changes in bundle "%s" since version "%s".', $this->key, $tag));
+        }
+
+        return 'undefined' !== $tag;
     }
 }

@@ -176,7 +176,7 @@ class TransifexSyncTask implements TaskInterface
             }
 
             $target = $this->rootDir.'/'.str_replace('<lang>', $language, $settings['file_filter']);
-            $targetDir = dirname($target);
+            $targetDir = \dirname($target);
 
             if (!is_dir($targetDir)) {
                 mkdir($targetDir, 0755, true);

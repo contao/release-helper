@@ -24,7 +24,7 @@ $finder = (new Finder())
     ->in(__DIR__.'/../src/Command')
 ;
 
-/** @var SplFileInfo $file */
+/** @var SplFileInfo[] $finder */
 foreach ($finder as $file) {
     $class = 'Contao\ReleaseHelper\Command\\'.$file->getBasename('.php');
     $application->add(new $class());

@@ -15,7 +15,7 @@ namespace Contao\ReleaseHelper\Task;
 use GitWrapper\GitWrapper;
 use Psr\Log\LoggerInterface;
 
-class TagMasterBranchTask implements TaskInterface
+class TagBranchTask implements TaskInterface
 {
     /**
      * @var string
@@ -51,13 +51,12 @@ class TagMasterBranchTask implements TaskInterface
     {
         (new GitWrapper())
             ->workingCopy($this->rootDir)
-            ->checkout('master')
             ->tag($this->version)
             ->pushTag($this->version)
         ;
 
         if (null !== $this->logger) {
-            $this->logger->notice('Tagged the master branch.');
+            $this->logger->notice('Tagged the current branch.');
         }
     }
 }
