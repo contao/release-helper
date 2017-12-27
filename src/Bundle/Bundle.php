@@ -75,6 +75,7 @@ class Bundle
             (new TransifexSyncTask($this->path, $this->logger))->run();
             (new UpdateChangelogTask($this->path, $version, $this->logger))->run();
             (new UpdateConstantsTask($this->path, $version, $this->logger))->run();
+            (new CommitChangesTask($this->path, $branchName, 'Version '.$version.'.', $this->logger))->run();
         }
 
         (new TagBranchTask($this->path, $version, $this->logger))->run();
