@@ -71,13 +71,10 @@ class Bundle
             throw new \RuntimeException(sprintf('Cannot process branch "%s"', $branchName));
         }
 
-        if (!$this->isTaggedCommit()) {
-            (new TransifexSyncTask($this->path, $this->logger))->run();
-            (new UpdateChangelogTask($this->path, $version, $this->logger))->run();
-            (new UpdateConstantsTask($this->path, $version, $this->logger))->run();
-            (new CommitChangesTask($this->path, $branchName, 'Version '.$version.'.', $this->logger))->run();
-        }
-
+        (new TransifexSyncTask($this->path, $this->logger))->run();
+        (new UpdateChangelogTask($this->path, $version, $this->logger))->run();
+        (new UpdateConstantsTask($this->path, $version, $this->logger))->run();
+        (new CommitChangesTask($this->path, $branchName, 'Version '.$version.'.', $this->logger))->run();
         (new TagBranchTask($this->path, $version, $this->logger))->run();
     }
 
@@ -115,21 +112,5 @@ class Bundle
         }
 
         return $branchName;
-    }
-
-    /**
-     * Checks if the current commit is tagged.
-     *
-     * @return bool
-     */
-    private function isTaggedCommit(): bool
-    {
-        $tag = trim((new GitWrapper())->git('name-rev --name-only --tags HEAD', $this->path));
-
-        if (null !== $this->logger && 'undefined' !== $tag) {
-            $this->logger->notice(sprintf('No changes in bundle "%s" since version "%s".', $this->key, $tag));
-        }
-
-        return 'undefined' !== $tag;
     }
 }
