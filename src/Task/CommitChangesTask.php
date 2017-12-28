@@ -69,7 +69,7 @@ class CommitChangesTask implements TaskInterface
         ;
 
         if (null !== $this->logger) {
-            $this->logger->notice(sprintf('Commited the changes of the "%s" branch.', $this->message));
+            $this->logger->notice(sprintf('Commited the changes of the "%s" branch.', $this->branchName));
         }
     }
 }
