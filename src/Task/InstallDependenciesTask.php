@@ -44,6 +44,49 @@ class InstallDependenciesTask implements TaskInterface
      */
     public function run(): void
     {
+        $scripts = $this->removeScripts();
+        $this->installDependencies();
+        $this->restoreScripts($scripts);
+    }
+
+    /**
+     * Removes the "scripts" section of the composer.json file.
+     *
+     * @return array
+     */
+    private function removeScripts(): array
+    {
+        $json = json_decode(file_get_contents($this->buildDir.'/composer.json'), true);
+
+        $scripts = $json['scripts'];
+        unset($json['scripts']);
+
+        file_put_contents($this->buildDir.'/composer.json', json_encode($json, JSON_PRETTY_PRINT));
+
+        return $scripts;
+    }
+
+    /**
+     * Re-adds the "script" section to the composer.json file.
+     *
+     * @param array $scripts
+     */
+    private function restoreScripts(array $scripts): void
+    {
+        $json = json_decode(file_get_contents($this->buildDir.'/composer.json'), true);
+        $json['scripts'] = $scripts;
+
+        file_put_contents($this->buildDir.'/composer.json', json_encode($json, JSON_PRETTY_PRINT));
+    }
+
+    /**
+     * Installs the dependencies.
+     *
+     * @throws \RuntimeException
+     * @throws ProcessFailedException
+     */
+    private function installDependencies(): void
+    {
         $finder = new ExecutableFinder();
 
         if (false === ($composer = $finder->find('composer', false))) {
@@ -54,7 +97,7 @@ class InstallDependenciesTask implements TaskInterface
             $this->logger->info(trim($buffer));
         };
 
-        $process = new Process($composer.' install --prefer-dist --no-dev --no-scripts', $this->buildDir);
+        $process = new Process($composer.' install --prefer-dist --no-dev', $this->buildDir);
         $process->run($callback);
 
         if (!$process->isSuccessful()) {
