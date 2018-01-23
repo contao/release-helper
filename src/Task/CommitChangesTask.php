@@ -58,12 +58,11 @@ class CommitChangesTask implements TaskInterface
     {
         $git = (new GitWrapper())->workingCopy($this->rootDir);
 
-        if (!$git->hasChanges()) {
+        if (!$git->diff('--staged')->getOutput()) {
             return;
         }
 
         $git
-            ->add('-A')
             ->commit($this->message)
             ->push('origin', $this->branchName)
         ;
