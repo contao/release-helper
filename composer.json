@@ -2,7 +2,7 @@
     "name": "contao/release-helper",
     "type": "project",
     "description": "Contao 4 release helper",
-    "license": "LGPL-3.0+",
+    "license": "LGPL-3.0-or-later",
     "authors": [
         {
             "name": "Leo Feyer",
