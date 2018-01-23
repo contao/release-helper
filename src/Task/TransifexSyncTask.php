@@ -196,7 +196,7 @@ class TransifexSyncTask implements TaskInterface
      */
     private function getXliffContent(string $key, string $language): string
     {
-        list(, $resource) = explode('.', $key);
+        [, $resource] = explode('.', $key);
 
         /** @var Translations $translations */
         $translations = $this->transifex->get('translations');

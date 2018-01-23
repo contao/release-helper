@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace Contao\ReleaseHelper\Bundle;
 
 use Contao\ReleaseHelper\Task\CommitChangesTask;
+use Contao\ReleaseHelper\Task\StageChangesTask;
 use Contao\ReleaseHelper\Task\SwitchBranchTask;
 use Contao\ReleaseHelper\Task\TagBranchTask;
 use Contao\ReleaseHelper\Task\TransifexSyncTask;
@@ -74,6 +75,7 @@ class Bundle
         (new TransifexSyncTask($this->path, $this->logger))->run();
         (new UpdateChangelogTask($this->path, $version, $this->logger))->run();
         (new UpdateConstantsTask($this->path, $version, $this->logger))->run();
+        (new StageChangesTask($this->path, $branchName, $this->logger))->run();
         (new CommitChangesTask($this->path, $branchName, 'Version '.$version.'.', $this->logger))->run();
         (new TagBranchTask($this->path, $version, $this->logger))->run();
     }

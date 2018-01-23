@@ -61,7 +61,7 @@ class UpdateConstantsTask implements TaskInterface
         }
 
         $content = file_get_contents($constants);
-        list($maj, $min, $build) = explode('.', $this->version);
+        [$maj, $min, $build] = explode('.', $this->version);
 
         $content = str_replace(
             [
