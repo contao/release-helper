@@ -56,13 +56,13 @@ class UpdateChangelogTask implements TaskInterface
 
         $content = file_get_contents($changeLog);
 
-        if (false === strpos($content, '### DEV')) {
+        if (false === strpos($content, '## DEV')) {
             return;
         }
 
-        $headline = sprintf('### %s (%s)', $this->version, date('Y-m-d'));
+        $headline = sprintf('## %s (%s)', $this->version, date('Y-m-d'));
 
-        file_put_contents($changeLog, str_replace('### DEV', $headline, $content));
+        file_put_contents($changeLog, str_replace('## DEV', $headline, $content));
 
         if (null !== $this->logger) {
             $this->logger->notice('Updated the CHANGELOG.md file.');
