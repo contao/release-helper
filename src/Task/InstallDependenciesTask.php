@@ -61,7 +61,10 @@ class InstallDependenciesTask implements TaskInterface
         $scripts = $json['scripts'];
         unset($json['scripts']);
 
-        file_put_contents($this->buildDir.'/composer.json', json_encode($json, JSON_PRETTY_PRINT));
+        file_put_contents(
+            $this->buildDir.'/composer.json',
+            json_encode($json, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES)
+        );
 
         return $scripts;
     }
@@ -76,7 +79,10 @@ class InstallDependenciesTask implements TaskInterface
         $json = json_decode(file_get_contents($this->buildDir.'/composer.json'), true);
         $json['scripts'] = $scripts;
 
-        file_put_contents($this->buildDir.'/composer.json', json_encode($json, JSON_PRETTY_PRINT));
+        file_put_contents(
+            $this->buildDir.'/composer.json',
+            json_encode($json, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES)
+        );
     }
 
     /**
