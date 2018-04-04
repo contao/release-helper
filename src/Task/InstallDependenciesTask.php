@@ -63,7 +63,7 @@ class InstallDependenciesTask implements TaskInterface
 
         file_put_contents(
             $this->buildDir.'/composer.json',
-            json_encode($json, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES)
+            json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
         );
 
         return $scripts;
@@ -81,7 +81,7 @@ class InstallDependenciesTask implements TaskInterface
 
         file_put_contents(
             $this->buildDir.'/composer.json',
-            json_encode($json, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES)
+            json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
         );
     }
 

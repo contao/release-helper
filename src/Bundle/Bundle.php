@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace Contao\ReleaseHelper\Bundle;
 
 use Contao\ReleaseHelper\Task\CommitChangesTask;
+use Contao\ReleaseHelper\Task\MergeBranchTask;
 use Contao\ReleaseHelper\Task\StageChangesTask;
 use Contao\ReleaseHelper\Task\SwitchBranchTask;
 use Contao\ReleaseHelper\Task\TagBranchTask;
@@ -98,6 +99,17 @@ class Bundle
     public function commitChanges(string $message): void
     {
         (new CommitChangesTask($this->path, $this->getBranchName(), $message, $this->logger))->run();
+    }
+
+    /**
+     * Merges one branch into another.
+     *
+     * @param string $from
+     * @param string $to
+     */
+    public function mergeBranch(string $from, string $to): void
+    {
+        (new MergeBranchTask($this->path, $from, $to, $this->logger))->run();
     }
 
     /**
